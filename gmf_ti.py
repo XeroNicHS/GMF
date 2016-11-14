@@ -61,7 +61,7 @@ def main():
             else:
                 print("[-] Attached File not found !!")
 
-        except:
+        except Exception as e:
             print("[-] Error : %s" % e)
             sys.exit(-1)
 
