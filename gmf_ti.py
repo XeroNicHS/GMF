@@ -38,7 +38,7 @@ def main():
         url_source = get_url_source(url)
 
         # find 's1.daumcdn.net/cfs.tistory'
-        if url_source.find("s1.daumcdn.net/cfs.tistory") == -1:
+        if url_source.find("t1.daumcdn.net/tistory") == -1:
             print("[-] It is not a Tistory Blog")
             sys.exit(0)
 
