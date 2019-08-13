@@ -28,7 +28,7 @@ def get_url_source(url):
                 sys.exit(0)
 
             # get frame src
-            p_frame = re.compile(r"\s*.*?<frameset.*?>(.*)</frameset>", re.IGNORECASE | re.DOTALL)
+            p_frame = re.compile(r"\s*.*?<iframe.*?mainFrame.*?(.*)hiddenFrame", re.IGNORECASE | re.DOTALL)
             p_src_url = re.compile(r"\s*.*?src=[\'\"](.+?)[\'\"]", re.IGNORECASE | re.DOTALL)
             src_url = p_src_url.match(p_frame.match(url_source).group(1)).group(1)
             url = src_url
