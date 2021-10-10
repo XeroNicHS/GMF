@@ -16,19 +16,19 @@ def print_logo():
 
 def get_url_source(url):
     try:
-        while url.find("PostView.nhn") == -1 and url.find("PostList.nhn") == -1:
+        while url.find("PostView.naver") == -1 and url.find("PostList.naver") == -1:
             f = request.urlopen(url)
             url_info = f.info()
             url_charset = client.HTTPMessage.get_charsets(url_info)[0]
             url_source = f.read().decode(url_charset)
 
             # find 'NBlogWlwLayout.nhn'
-            if url_source.find("NBlogWlwLayout.nhn") == -1:
+            if url_source.find("NBlogWlwLayout.naver") == -1:
                 print("\n[-] It is not a NAVER Blog")
                 sys.exit(0)
 
             # get frame src
-            p_frame = re.compile(r"\s*.*?<iframe.*?mainFrame.*?(.*)hiddenFrame", re.IGNORECASE | re.DOTALL)
+            p_frame = re.compile(r"\s*.*?<iframe.*?mainFrame.*?(.*)", re.IGNORECASE | re.DOTALL)
             p_src_url = re.compile(r"\s*.*?src=[\'\"](.+?)[\'\"]", re.IGNORECASE | re.DOTALL)
             src_url = p_src_url.match(p_frame.match(url_source).group(1)).group(1)
             url = src_url
@@ -62,20 +62,21 @@ def main():
         url_source = get_url_source(url)
 
         # find 't.static.blog.naver.net'
-        if url_source.find("t.static.blog.naver.net") == -1:
+        if url_source.find("t.static.blog/mylog") == -1:
             print("\n[-] It is not a NAVER Blog")
             sys.exit(0)
 
         try:
             # find 'aPostFiles'
-            p_attached_file = re.compile(r"\s*.*aPostFiles\[1\] = \[(.*?)\]", re.IGNORECASE | re.DOTALL)
+            #p_attached_file = re.compile(r"\s*.*aPostFiles\[1\] = \[(.*?)\]", re.IGNORECASE | re.DOTALL)
+            p_attached_file = re.compile(r"\s*.*aPostFiles\[1\] = JSON.parse\(\'\[(.*?)\]", re.IGNORECASE | re.DOTALL)
             result = p_attached_file.match(url_source).group(1)
             if result:
                 # convert to JSON style
-                data = "[" + result.replace('\'', '\"') + "]"
+                data = "[" + result.replace('\\\'', '\"') + "]"
                 json_data = json.loads(data)
 
-                for each_file in json_data:
+                for each_file in json_data:                	
                     print("* File : %s, Size : %s Bytes" % (each_file["encodedAttachFileName"], each_file["attachFileSize"]))
                     print("  Link : %s" % each_file["encodedAttachFileUrl"])
                     # File Download
